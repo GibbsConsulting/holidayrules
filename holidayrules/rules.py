@@ -4,6 +4,7 @@
 
 from dataclasses import dataclass
 from datetime import date
+from functools import partial
 from typing import Callable, List, Tuple
 
 
@@ -25,6 +26,15 @@ class HolidayRule:
         """
         return [self.rule(year) for year in years]
 
+
 def new_year_no_obs(year: int) -> Tuple[date, str]:
     """New year, without any observation"""
     return date(year=year, month=1, day=1), None
+
+
+def fixed_date_no_obs(year: int, month: int, day: int) -> Tuple[date, str]:
+    return date(year=year, month=month, day=day), None
+
+
+def fixed_date_function(month, day):
+    return partial(fixed_date_no_obs, month=month, day=day)

@@ -2,7 +2,7 @@
 
 
 import datetime
-from holidayrules.rules import HolidayRule, new_year_no_obs
+from holidayrules.rules import HolidayRule, new_year_no_obs, fixed_date_function
 
 
 def test_simple_rule():
@@ -14,3 +14,8 @@ def test_simple_rule():
     assert hr.description == 'New Year No Obs'
 
     assert hr.fix_dates([2020]) == [(datetime.date(2020, 1, 1), None), ]
+
+
+def test_function_formation():
+    fdf = fixed_date_function(3, 4)
+    assert fdf(2020) == (datetime.date(2020, 3, 4), None)
