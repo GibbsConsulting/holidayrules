@@ -14,8 +14,7 @@ install:
   - python setup.py develop
 
 script:
-  - pushd demo
-  - pytest demo --cov=demo --cov=django_taskflow --cov-report term-missing
+  - pytest holidayrules --cov=holiday-rules --cov-report term-missing
 
 after_success:
   - coveralls
