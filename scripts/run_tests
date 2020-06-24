@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#
+source env/bin/activate
+pytest holidayrules --cov=holidayrules --cov-report term-missing
+popd

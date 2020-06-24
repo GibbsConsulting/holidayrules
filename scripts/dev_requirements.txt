@@ -1,0 +1,9 @@
+black
+grip
+pylint
+pytest>=4.6
+pytest-cov
+sphinx
+sphinx-autobuild
+sphinx_rtd_theme
+twine
