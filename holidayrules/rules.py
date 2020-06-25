@@ -3,7 +3,7 @@
 
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from functools import partial
 from typing import Callable, List, Tuple
 
@@ -33,8 +33,42 @@ def new_year_no_obs(year: int) -> Tuple[date, str]:
 
 
 def fixed_date_no_obs(year: int, month: int, day: int) -> Tuple[date, str]:
+    """FIxed date, with no adjustment"""
     return date(year=year, month=month, day=day), None
 
 
+def adjust_weekend_to_monday(idate, isadj):
+    """Adjust weekend date forward to monday if need be"""
+    wd = idate.weekday()
+
+    if wd > 4:
+        # Saturday or sunday
+        return idate + timedelta(days=6 - wd), 'Observed'
+
+    return idate, isadj
+
+
+def adjust_weekend_both_ways(idate, isadj):
+    """Adjust weekend date forward to monday from sunday, backward to friday if saturday"""
+    wd = idate.weekday()
+
+    if wd == 5:
+        # Saturday or sunday
+        return idate - timedelta(days=1), 'Observed'
+
+    if wd == 6:
+        return idate + timedelta(days=1), 'Observed'
+
+    return idate, isadj
+
+
+def wrap_adjustment_function(base, wrapper):
+    """Wrap a function with an adjuster"""
+    def wrapped_func(year):
+        return wrapper(*base(year))
+    return wrapped_func
+
+
 def fixed_date_function(month, day):
+    """A fixed day of the month, with no adjustment"""
     return partial(fixed_date_no_obs, month=month, day=day)
