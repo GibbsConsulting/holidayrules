@@ -43,7 +43,7 @@ def adjust_weekend_to_monday(idate, isadj):
 
     if wd > 4:
         # Saturday or sunday
-        return idate + timedelta(days=6 - wd), 'Observed'
+        return idate + timedelta(days=7 - wd), 'Observed'
 
     return idate, isadj
 

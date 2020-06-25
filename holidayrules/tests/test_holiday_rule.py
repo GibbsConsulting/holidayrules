@@ -29,3 +29,14 @@ def test_function_formation():
     assert independence_day(2020) == (datetime.date(2020, 7, 3), 'Observed')
     assert independence_day(2021) == (datetime.date(2021, 7, 5), 'Observed')
     assert independence_day(2022) == (datetime.date(2022, 7, 4), None)
+
+    new_year_uk = wrap_adjustment_function(fixed_date_function(1, 1),
+                                           adjust_weekend_to_monday)
+    assert new_year_uk is not None
+    assert new_year_uk(2020) == (datetime.date(2020, 1, 1), None)
+    assert new_year_uk(2015) == (datetime.date(2015, 1, 1), None)
+    assert new_year_uk(2018) == (datetime.date(2018, 1, 1), None)
+    assert new_year_uk(2016) == (datetime.date(2016, 1, 1), None)
+    assert new_year_uk(2017) == (datetime.date(2017, 1, 2), 'Observed')
+    assert new_year_uk(2022) == (datetime.date(2022, 1, 3), 'Observed')
+    assert new_year_uk(2023) == (datetime.date(2023, 1, 2), 'Observed')
