@@ -7,6 +7,9 @@ from datetime import date, timedelta
 from functools import partial
 from typing import Callable, List, Tuple
 
+from dateutil.easter import easter, EASTER_ORTHODOX, EASTER_WESTERN
+from dateutil.relativedelta import relativedelta
+
 
 @dataclass(frozen=True)
 class HolidayRule:
@@ -72,3 +75,48 @@ def wrap_adjustment_function(base, wrapper):
 def fixed_date_function(month, day):
     """A fixed day of the month, with no adjustment"""
     return partial(fixed_date_no_obs, month=month, day=day)
+
+
+def fixed_date_no_roll(month, day):
+    """Fixed day of the month, without rolling"""
+    return fixed_date_function(month, day)
+
+
+def fixed_date_roll_forward(month, day):
+    """Fixed day of the month, rolling forward on weekends to observation date"""
+    return wrap_adjustment_function(fixed_date_function(month, day),
+                                    adjust_weekend_to_monday)
+
+
+def fixed_date_roll_both(month, day):
+    """Fixed day of the month, rolling forward on sunday, backwards on saturday, to observation date"""
+    return wrap_adjustment_function(fixed_date_function(month, day),
+                                    adjust_weekend_both_ways)
+
+
+_NEW_YEAR_ROLL_BOTH = fixed_date_roll_both(1, 1)
+
+def new_year_roll_back(year: int) -> Tuple[date, str]:
+    """Special case of rolling backwards on a year end - second entry, rolled back"""
+    following_year_date = _NEW_YEAR_ROLL_BOTH(year + 1)
+
+    if following_year_date[0].year == year:
+        # Rolled back
+        return following_year_date
+
+    return (None, None)
+
+
+def easter_western(year: int) -> Tuple[date, str]:
+    """Easter monday, western method"""
+    return (easter(year, EASTER_WESTERN) + relativedelta(days=1), None)
+
+
+def good_friday_western(year: int) -> Tuple[date, str]:
+    """Good friday, western method"""
+    return (easter(year, EASTER_WESTERN) - relativedelta(days=2), None)
+
+
+def easter_orthodox(year: int) -> Tuple[date, str]:
+    """Easter monday, orthodox method"""
+    return (easter(year, EASTER_ORTHODOX) + relativedelta(days=1), None)

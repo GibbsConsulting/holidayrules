@@ -5,6 +5,10 @@ import datetime
 from holidayrules.rules import (HolidayRule, new_year_no_obs, fixed_date_function,
                                 adjust_weekend_to_monday, adjust_weekend_both_ways,
                                 wrap_adjustment_function,
+                                fixed_date_roll_forward, fixed_date_roll_both,
+                                fixed_date_no_roll, new_year_roll_back,
+                                easter_western, easter_orthodox,
+                                good_friday_western,
                                 )
 
 
@@ -40,3 +44,41 @@ def test_function_formation():
     assert new_year_uk(2017) == (datetime.date(2017, 1, 2), 'Observed')
     assert new_year_uk(2022) == (datetime.date(2022, 1, 3), 'Observed')
     assert new_year_uk(2023) == (datetime.date(2023, 1, 2), 'Observed')
+
+
+def test_fixed_date_functions():
+    """Test fix date functions"""
+    ny_fwd = fixed_date_roll_forward(1, 1)
+    ny_both = fixed_date_roll_both(1, 1)
+    ny_none = fixed_date_no_roll(1, 1)
+
+    assert ny_fwd(2016) == (datetime.date(2016, 1, 1), None)
+    assert ny_fwd(2021) == (datetime.date(2021, 1, 1), None)
+    assert ny_fwd(2017) == (datetime.date(2017, 1, 2), 'Observed')
+    assert ny_fwd(2022) == (datetime.date(2022, 1, 3), 'Observed')
+    assert ny_fwd(2023) == (datetime.date(2023, 1, 2), 'Observed')
+
+    assert ny_both(2016) == (datetime.date(2016, 1, 1), None)
+    assert ny_both(2021) == (datetime.date(2021, 1, 1), None)
+    assert ny_both(2017) == (datetime.date(2017, 1, 2), 'Observed')
+    assert ny_both(2022) == (datetime.date(2021, 12, 31), 'Observed')
+    assert ny_both(2023) == (datetime.date(2023, 1, 2), 'Observed')
+
+    assert ny_none(2016) == (datetime.date(2016, 1, 1), None)
+    assert ny_none(2017) == (datetime.date(2017, 1, 1), None)
+    assert ny_none(2021) == (datetime.date(2021, 1, 1), None)
+    assert ny_none(2022) == (datetime.date(2022, 1, 1), None)
+    assert ny_none(2023) == (datetime.date(2023, 1, 1), None)
+
+    assert new_year_roll_back(2016) == (None, None)
+    assert new_year_roll_back(2017) == (None, None)
+    assert new_year_roll_back(2022) == (None, None)
+    assert new_year_roll_back(2021) == (datetime.date(2021, 12, 31), 'Observed')
+
+
+def test_easter():
+    """Test Easter rules: monday and good friday"""
+
+    assert easter_western(2020) == (datetime.date(2020, 4, 13), None)
+    assert good_friday_western(2020) == (datetime.date(2020, 4, 10), None)
+    assert easter_orthodox(2020) == (datetime.date(2020, 4, 20), None)
