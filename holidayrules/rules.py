@@ -96,6 +96,7 @@ def fixed_date_roll_both(month, day):
 
 _NEW_YEAR_ROLL_BOTH = fixed_date_roll_both(1, 1)
 
+
 def new_year_roll_back(year: int) -> Tuple[date, str]:
     """Special case of rolling backwards on a year end - second entry, rolled back"""
     following_year_date = _NEW_YEAR_ROLL_BOTH(year + 1)
@@ -140,3 +141,13 @@ def boxing_day(year: int) -> Tuple[date, str]:
         return (boxing + relativedelta(days=2), 'Observed')
 
     return (boxing, None)
+
+
+def exclude_years(underlying_function, years):
+    """Exclude years from holiday calculation"""
+    def with_excluded_years(year):
+        if year in years:
+            return (None, None)
+        return underlying_function(year)
+
+    return with_excluded_years

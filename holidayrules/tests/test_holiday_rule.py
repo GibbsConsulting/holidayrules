@@ -10,6 +10,7 @@ from holidayrules.rules import (HolidayRule, new_year_no_obs, fixed_date_functio
                                 easter_western, easter_orthodox,
                                 good_friday_western,
                                 christmas_day, boxing_day,
+                                exclude_years,
                                 )
 
 
@@ -99,3 +100,16 @@ def test_xmas():
     assert boxing_day(2021) == (datetime.date(2021, 12, 28), 'Observed') # Sun to Tue, skip over Xmas on Mon
     assert boxing_day(2022) == (datetime.date(2022, 12, 26), None)
     assert boxing_day(2023) == (datetime.date(2023, 12, 26), None)
+
+
+def test_exclude_years():
+    """Check exclusion of years"""
+
+    exclude2122 = exclude_years(christmas_day, [2021, 2022])
+
+    assert exclude2122(2020) == (datetime.date(2020, 12, 25), None)
+    assert exclude2122(2019) == (datetime.date(2019, 12, 25), None)
+    assert exclude2122(2023) == (datetime.date(2023, 12, 25), None)
+
+    assert exclude2122(2021) == (None, None)
+    assert exclude2122(2022) == (None, None)
