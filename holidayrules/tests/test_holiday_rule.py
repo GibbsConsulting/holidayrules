@@ -9,6 +9,7 @@ from holidayrules.rules import (HolidayRule, new_year_no_obs, fixed_date_functio
                                 fixed_date_no_roll, new_year_roll_back,
                                 easter_western, easter_orthodox,
                                 good_friday_western,
+                                christmas_day, boxing_day,
                                 )
 
 
@@ -82,3 +83,19 @@ def test_easter():
     assert easter_western(2020) == (datetime.date(2020, 4, 13), None)
     assert good_friday_western(2020) == (datetime.date(2020, 4, 10), None)
     assert easter_orthodox(2020) == (datetime.date(2020, 4, 20), None)
+
+
+def test_xmas():
+    """Check Christmas and Boxing day rules"""
+
+    assert christmas_day(2019) == (datetime.date(2019, 12, 25), None)
+    assert christmas_day(2020) == (datetime.date(2020, 12, 25), None)
+    assert christmas_day(2021) == (datetime.date(2021, 12, 27), 'Observed') # Sat to Mon
+    assert christmas_day(2022) == (datetime.date(2022, 12, 27), 'Observed') # Sun to Tue, skip over boxing on Mon
+    assert christmas_day(2023) == (datetime.date(2023, 12, 25), None)
+
+    assert boxing_day(2019) == (datetime.date(2019, 12, 26), None)
+    assert boxing_day(2020) == (datetime.date(2020, 12, 28), 'Observed') # Sat to Mon
+    assert boxing_day(2021) == (datetime.date(2021, 12, 28), 'Observed') # Sun to Tue, skip over Xmas on Mon
+    assert boxing_day(2022) == (datetime.date(2022, 12, 26), None)
+    assert boxing_day(2023) == (datetime.date(2023, 12, 26), None)

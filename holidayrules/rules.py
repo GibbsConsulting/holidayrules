@@ -120,3 +120,23 @@ def good_friday_western(year: int) -> Tuple[date, str]:
 def easter_orthodox(year: int) -> Tuple[date, str]:
     """Easter monday, orthodox method"""
     return (easter(year, EASTER_ORTHODOX) + relativedelta(days=1), None)
+
+
+def christmas_day(year: int) -> Tuple[date, str]:
+    """Christmas day, when Boxing day also observed"""
+    xmas = date(year, 12, 25)
+    if xmas.weekday() > 4:
+        #Sat or sun, move 2 days
+        return (xmas + relativedelta(days=2), 'Observed')
+
+    return (xmas, None)
+
+
+def boxing_day(year: int) -> Tuple[date, str]:
+    """Boxing day, with Christmas leaping over if boxing day is a Sunday"""
+    boxing = date(year, 12, 26)
+    wd = boxing.weekday()
+    if wd > 4:
+        return (boxing + relativedelta(days=2), 'Observed')
+
+    return (boxing, None)
