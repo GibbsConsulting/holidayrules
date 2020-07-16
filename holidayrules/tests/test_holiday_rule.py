@@ -5,6 +5,7 @@ import datetime
 from holidayrules.rules import (HolidayRule, new_year_no_obs, fixed_date_function,
                                 adjust_weekend_to_monday, adjust_weekend_both_ways,
                                 wrap_adjustment_function,
+                                exclude_years_wrapper,
                                 fixed_date_roll_forward, fixed_date_roll_both,
                                 fixed_date_no_roll, new_year_roll_back,
                                 easter_western, easter_orthodox,
@@ -46,6 +47,26 @@ def test_function_formation():
     assert new_year_uk(2017) == (datetime.date(2017, 1, 2), 'Observed')
     assert new_year_uk(2022) == (datetime.date(2022, 1, 3), 'Observed')
     assert new_year_uk(2023) == (datetime.date(2023, 1, 2), 'Observed')
+
+    assert independence_day(2020) == (datetime.date(2020, 7, 3), 'Observed')
+    assert independence_day(2021) == (datetime.date(2021, 7, 5), 'Observed')
+    assert independence_day(2022) == (datetime.date(2022, 7, 4), None)
+
+    indep_ex_none = exclude_years_wrapper(independence_day)
+    indep_ex_2021 = exclude_years_wrapper(independence_day, [2021])
+    indep_ex_202x = exclude_years_wrapper(independence_day, [2020, 2022])
+
+    assert indep_ex_none(2020) == (datetime.date(2020, 7, 3), 'Observed')
+    assert indep_ex_none(2021) == (datetime.date(2021, 7, 5), 'Observed')
+    assert indep_ex_none(2022) == (datetime.date(2022, 7, 4), None)
+
+    assert indep_ex_2021(2020) == (datetime.date(2020, 7, 3), 'Observed')
+    assert indep_ex_2021(2021) == None
+    assert indep_ex_2021(2022) == (datetime.date(2022, 7, 4), None)
+
+    assert indep_ex_202x(2020) == None
+    assert indep_ex_202x(2021) == (datetime.date(2021, 7, 5), 'Observed')
+    assert indep_ex_202x(2022) == None
 
 
 def test_fixed_date_functions():

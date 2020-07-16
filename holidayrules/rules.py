@@ -67,9 +67,19 @@ def adjust_weekend_both_ways(idate, isadj):
 
 def wrap_adjustment_function(base, wrapper):
     """Wrap a function with an adjuster"""
-    def wrapped_func(year):
+    def wrapped_func(year, base=base):
         return wrapper(*base(year))
     return wrapped_func
+
+
+def exclude_years_wrapper(base, years=None):
+    """Wrap a function with an exclusion list of years"""
+    years = years[:] if years else []
+    def exclude_years(year: int, years=years, base=base) -> Tuple[date, str]:
+        if year in years:
+            return None
+        return base(year)
+    return exclude_years
 
 
 def fixed_date_function(month, day):
