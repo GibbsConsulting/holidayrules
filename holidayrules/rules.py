@@ -74,10 +74,10 @@ def wrap_adjustment_function(base, wrapper):
 
 def exclude_years_wrapper(base, years=None):
     """Wrap a function with an exclusion list of years"""
-    years = years[:] if years else []
-    def exclude_years(year: int, years=years, base=base) -> Tuple[date, str]:
-        if year in years:
-            return None
+    the_years = years[:] if years else []
+    def exclude_years(year: int) -> Tuple[date, str]:
+        if year in the_years:
+            return (None, None)
         return base(year)
     return exclude_years
 
@@ -151,13 +151,3 @@ def boxing_day(year: int) -> Tuple[date, str]:
         return (boxing + relativedelta(days=2), 'Observed')
 
     return (boxing, None)
-
-
-def exclude_years(underlying_function, years):
-    """Exclude years from holiday calculation"""
-    def with_excluded_years(year):
-        if year in years:
-            return (None, None)
-        return underlying_function(year)
-
-    return with_excluded_years

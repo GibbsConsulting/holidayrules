@@ -11,7 +11,6 @@ from holidayrules.rules import (HolidayRule, new_year_no_obs, fixed_date_functio
                                 easter_western, easter_orthodox,
                                 good_friday_western,
                                 christmas_day, boxing_day,
-                                exclude_years,
                                 )
 
 
@@ -55,18 +54,23 @@ def test_function_formation():
     indep_ex_none = exclude_years_wrapper(independence_day)
     indep_ex_2021 = exclude_years_wrapper(independence_day, [2021])
     indep_ex_202x = exclude_years_wrapper(independence_day, [2020, 2022])
+    indep_ny_ex21 = exclude_years_wrapper(new_year_uk, [2021])
 
     assert indep_ex_none(2020) == (datetime.date(2020, 7, 3), 'Observed')
     assert indep_ex_none(2021) == (datetime.date(2021, 7, 5), 'Observed')
     assert indep_ex_none(2022) == (datetime.date(2022, 7, 4), None)
 
     assert indep_ex_2021(2020) == (datetime.date(2020, 7, 3), 'Observed')
-    assert indep_ex_2021(2021) == None
+    assert indep_ex_2021(2021) == (None, None)
     assert indep_ex_2021(2022) == (datetime.date(2022, 7, 4), None)
 
-    assert indep_ex_202x(2020) == None
+    assert indep_ex_202x(2020) == (None, None)
     assert indep_ex_202x(2021) == (datetime.date(2021, 7, 5), 'Observed')
-    assert indep_ex_202x(2022) == None
+    assert indep_ex_202x(2022) == (None, None)
+
+    assert indep_ny_ex21(2020) == (datetime.date(2020, 1, 1), None)
+    assert indep_ny_ex21(2021) == (None, None)
+    assert indep_ny_ex21(2022) == (datetime.date(2022, 1, 3), 'Observed')
 
 
 def test_fixed_date_functions():
@@ -126,7 +130,7 @@ def test_xmas():
 def test_exclude_years():
     """Check exclusion of years"""
 
-    exclude2122 = exclude_years(christmas_day, [2021, 2022])
+    exclude2122 = exclude_years_wrapper(christmas_day, [2021, 2022])
 
     assert exclude2122(2020) == (datetime.date(2020, 12, 25), None)
     assert exclude2122(2019) == (datetime.date(2019, 12, 25), None)
