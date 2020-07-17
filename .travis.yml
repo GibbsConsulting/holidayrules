@@ -14,7 +14,7 @@ install:
   - python setup.py develop
 
 script:
-  - pytest holidayrules --cov=holiday-rules --cov-report term-missing
+  - pytest holidayrules --cov=holidayrules --cov-report term-missing
 
 after_success:
   - coveralls
