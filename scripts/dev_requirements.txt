@@ -1,5 +1,7 @@
 black
+dash
 grip
+pandas
 pylint
 pytest>=4.6
 pytest-cov

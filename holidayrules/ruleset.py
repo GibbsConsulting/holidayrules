@@ -18,6 +18,21 @@ class RuleSet:
         em = "0" if date.month < 10 else ""
         return f"{date.year}{em}{date.month}{ed}{date.day}"
 
+    @staticmethod
+    def values_by_ymd(dates):
+        """Convert a list of ymd-indexed values into explicit maps"""
+
+        vals = []
+        for k, v in dates.items():
+            vals.append({'date_string': k,
+                         'holiday': v,
+                         'year': int(k[:4]),
+                         'month': int(k[4:6]),
+                         'day': int(k[6:]),
+                         })
+
+        return vals
+
     def dates_for_year(self, year):
         """Work out what dates are holidays in a particular year"""
         if year in self._cached_years:
