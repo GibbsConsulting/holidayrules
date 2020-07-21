@@ -29,12 +29,7 @@ rules = [HolidayRule("New year, rolling back",
 
 
 hrs = RuleSet(rules)
-date_items = {}
-date_item_lists = [hrs.dates_for_year(year) for year in range(2018, 2038)]
-for dil in date_item_lists:
-    date_items.update(dil)
-
-date_items = RuleSet.values_by_ymd(date_items)
+date_items = RuleSet.values_by_ymd(hrs.dates_for_years(range(2018, 2038)))
 print(date_items)
 dfHols = pd.DataFrame(date_items)
 
@@ -46,16 +41,30 @@ dfHols['DateDay'] = dfHols['date_string'].apply(lambda x: int(x[6:]))
 
 fig = px.bar(dfHols, x='date_string', y='DateDay', color='year')
 
+def year_choices(df):
+    years = df['year'].sort_values().unique()
+    return [{'label': y, 'value': str(y)} for y in years]
+
 
 app = dash.Dash(__name__)
 
 
 app.layout = html.Div(children=[html.H1("App here and there"),
-                                dash_table.DataTable(id='table',
+                                dcc.Dropdown(id="year_choice",
+                                             options=year_choices(dfHols),
+                                             multi=True,
+                                             ),
+                                dash_table.DataTable(id='hol_table',
                                                      columns=[{"name": i, "id": i} for i in dfHols.columns],
                                                      data=dfHols.to_dict('records'),),
                                 dcc.Graph(figure=fig),
                                 ])
+
+
+@app.callback(dash.dependencies.Output('hol_table', 'data'),
+              [dash.dependencies.Input('year_choice', 'value'),])
+def callback_year_choice(years):
+    return dfHols[dfHols['year'] in years].to_dict('records')
 
 
 if __name__ == '__main__':

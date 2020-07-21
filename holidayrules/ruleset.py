@@ -21,7 +21,6 @@ class RuleSet:
     @staticmethod
     def values_by_ymd(dates):
         """Convert a list of ymd-indexed values into explicit maps"""
-
         vals = []
         for k, v in dates.items():
             vals.append({'date_string': k,
@@ -50,6 +49,13 @@ class RuleSet:
                 self._cached_years[year] = holidays
 
         return holidays
+
+    def dates_for_years(self, years):
+        """Collapse multiple year entries into a single map"""
+        ret = {}
+        for year in years:
+            ret.update(self.dates_for_year(year))
+        return ret
 
     def _is_good_date(self, date):
         wd = date.weekday()
