@@ -30,7 +30,6 @@ rules = [HolidayRule("New year, rolling back",
 
 hrs = RuleSet(rules)
 date_items = RuleSet.values_by_ymd(hrs.dates_for_years(range(2018, 2038)))
-print(date_items)
 dfHols = pd.DataFrame(date_items)
 
 
@@ -43,7 +42,16 @@ fig = px.bar(dfHols, x='date_string', y='DateDay', color='year')
 
 def year_choices(df):
     years = df['year'].sort_values().unique()
-    return [{'label': y, 'value': str(y)} for y in years]
+    return [{'label': str(y), 'value': y} for y in years]
+
+
+month_names = ['Jan', 'Feb', 'Mar',
+               'Apr', 'May', 'Jun',
+               'Jul', 'Aug', 'Sep',
+               'Oct', 'Nov', 'Dec',
+               ]
+
+month_choices = [{'label': month_names[mth - 1], 'value': mth} for mth in range(1, 13)]
 
 
 app = dash.Dash(__name__)
@@ -54,6 +62,10 @@ app.layout = html.Div(children=[html.H1("App here and there"),
                                              options=year_choices(dfHols),
                                              multi=True,
                                              ),
+                                dcc.Dropdown(id="month_choice",
+                                             options=month_choices,
+                                             multi=True,
+                                             ),
                                 dash_table.DataTable(id='hol_table',
                                                      columns=[{"name": i, "id": i} for i in dfHols.columns],
                                                      data=dfHols.to_dict('records'),),
@@ -62,9 +74,19 @@ app.layout = html.Div(children=[html.H1("App here and there"),
 
 
 @app.callback(dash.dependencies.Output('hol_table', 'data'),
-              [dash.dependencies.Input('year_choice', 'value'),])
-def callback_year_choice(years):
-    return dfHols[dfHols['year'] in years].to_dict('records')
+              [dash.dependencies.Input('year_choice', 'value'),
+               dash.dependencies.Input('month_choice', 'value')])
+def callback_fix_choices(years, months):
+    if years:
+        in_years = dfHols['year'].apply(lambda year: year in years)
+        df = dfHols[in_years]
+    else:
+        df = dfHols
+
+    if months:
+        df = df[df['month'].apply(lambda month: month in months)]
+
+    return df.to_dict('records')
 
 
 if __name__ == '__main__':
