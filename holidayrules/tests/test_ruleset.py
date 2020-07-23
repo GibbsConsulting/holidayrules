@@ -39,6 +39,26 @@ def test_ruleset():
     rs2 = hrs.dates_for_year(2020)
     assert rs2 == hfy2020
 
+    dfy = hrs.dates_for_years([2020, 2021])
+    assert len(dfy) == 4
+    assert '20200101' in dfy
+    assert '20200706' in dfy
+    assert '20210101' in dfy
+    assert '20210705' in dfy
+
+    dmy_explicit = hrs.values_by_ymd(dfy)
+    assert len(dmy_explicit) == len(dfy)
+    assert dmy_explicit[0]['date_string'] == '20200101'
+    assert dmy_explicit[0]['holiday'] == 'NewYears'
+    assert dmy_explicit[0]['year'] == 2020
+    assert dmy_explicit[0]['month'] == 1
+    assert dmy_explicit[0]['day'] == 1
+    assert dmy_explicit[3]['date_string'] == '20210705'
+    assert dmy_explicit[3]['holiday'] == 'IndependenceDay [Observed]'
+    assert dmy_explicit[3]['year'] == 2021
+    assert dmy_explicit[3]['month'] == 7
+    assert dmy_explicit[3]['day'] == 5
+
 
 def test_no_holiday():
     """Check rule that returns None"""
@@ -78,3 +98,5 @@ def test_no_holiday():
     assert not hrs.is_good_day(datetime.date(2021, 12, 25))
     assert not hrs.is_good_day(datetime.date(2021, 2, 6))
     assert not hrs.is_good_day(datetime.date(2021, 2, 7))
+
+

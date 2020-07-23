@@ -10,6 +10,7 @@ from typing import Callable, List, Tuple
 from dateutil.easter import easter, EASTER_ORTHODOX, EASTER_WESTERN
 from dateutil.relativedelta import relativedelta
 
+from .utils import hr
 
 @dataclass(frozen=True)
 class HolidayRule:
@@ -106,6 +107,8 @@ def fixed_date_roll_both(month, day):
 
 _NEW_YEAR_ROLL_BOTH = fixed_date_roll_both(1, 1)
 
+hr("New Year")(fixed_date_roll_forward(1, 1))
+hr("New Year (Nearest)")(_NEW_YEAR_ROLL_BOTH)
 
 def new_year_roll_back(year: int) -> Tuple[date, str]:
     """Special case of rolling backwards on a year end - second entry, rolled back"""
@@ -118,21 +121,23 @@ def new_year_roll_back(year: int) -> Tuple[date, str]:
     return (None, None)
 
 
+@hr("Easter (Western)")
 def easter_western(year: int) -> Tuple[date, str]:
     """Easter monday, western method"""
     return (easter(year, EASTER_WESTERN) + relativedelta(days=1), None)
 
 
+@hr("Good Friday (Western)")
 def good_friday_western(year: int) -> Tuple[date, str]:
     """Good friday, western method"""
     return (easter(year, EASTER_WESTERN) - relativedelta(days=2), None)
-
 
 def easter_orthodox(year: int) -> Tuple[date, str]:
     """Easter monday, orthodox method"""
     return (easter(year, EASTER_ORTHODOX) + relativedelta(days=1), None)
 
 
+@hr("Christmas Day")
 def christmas_day(year: int) -> Tuple[date, str]:
     """Christmas day, when Boxing day also observed"""
     xmas = date(year, 12, 25)
@@ -143,6 +148,7 @@ def christmas_day(year: int) -> Tuple[date, str]:
     return (xmas, None)
 
 
+@hr("Boxing Day")
 def boxing_day(year: int) -> Tuple[date, str]:
     """Boxing day, with Christmas leaping over if boxing day is a Sunday"""
     boxing = date(year, 12, 26)
