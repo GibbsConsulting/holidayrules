@@ -107,8 +107,8 @@ def fixed_date_roll_both(month, day):
 
 _NEW_YEAR_ROLL_BOTH = fixed_date_roll_both(1, 1)
 
-hr("New Year")(fixed_date_roll_forward(1, 1))
-hr("New Year (Nearest)")(_NEW_YEAR_ROLL_BOTH)
+hr("New Years Day")(fixed_date_roll_forward(1, 1))
+hr("New Years Day (Nearest)")(_NEW_YEAR_ROLL_BOTH)
 
 def new_year_roll_back(year: int) -> Tuple[date, str]:
     """Special case of rolling backwards on a year end - second entry, rolled back"""
@@ -121,7 +121,7 @@ def new_year_roll_back(year: int) -> Tuple[date, str]:
     return (None, None)
 
 
-@hr("Easter (Western)")
+@hr("Easter Monday (Western)")
 def easter_western(year: int) -> Tuple[date, str]:
     """Easter monday, western method"""
     return (easter(year, EASTER_WESTERN) + relativedelta(days=1), None)
@@ -132,6 +132,8 @@ def good_friday_western(year: int) -> Tuple[date, str]:
     """Good friday, western method"""
     return (easter(year, EASTER_WESTERN) - relativedelta(days=2), None)
 
+
+@hr("Easter Monday (Orthodox)")
 def easter_orthodox(year: int) -> Tuple[date, str]:
     """Easter monday, orthodox method"""
     return (easter(year, EASTER_ORTHODOX) + relativedelta(days=1), None)

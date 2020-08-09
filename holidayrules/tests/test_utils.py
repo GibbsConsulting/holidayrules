@@ -44,3 +44,5 @@ def test_hr_registration():
     assert "DUMMY_RULE_3" in standard_ruleset()
 
     assert dummy_func_two(1234) == (None, None)
+
+    assert "New Years Day" in standard_ruleset()

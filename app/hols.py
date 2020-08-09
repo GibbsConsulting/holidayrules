@@ -19,7 +19,7 @@ from holidayrules.rules import (HolidayRule,
 rules = [HolidayRule("New year, rolling back",
                      "New year rolling backwards if a Saturday",
                      new_year_roll_back),
-         HolidayRule("New year, rolling forwards on sunday",
+         HolidayRule("New year, rolling forwards on weekends",
                      "NY2",
                      fixed_date_roll_both(1, 1)),
          HolidayRule("Canada Day",
@@ -53,6 +53,7 @@ month_names = ['Jan', 'Feb', 'Mar',
 
 month_choices = [{'label': month_names[mth - 1], 'value': mth} for mth in range(1, 13)]
 
+rule_choices = [{'label': rule.name, 'value': rule.name} for rule in rules]
 
 app = dash.Dash(__name__)
 
@@ -66,6 +67,10 @@ app.layout = html.Div(children=[html.H1("App here and there"),
                                              options=month_choices,
                                              multi=True,
                                              ),
+                                dcc.Dropdown(id="rule_choice",
+                                             options=rule_choices,
+                                             multi=True,
+                                             ),
                                 dash_table.DataTable(id='hol_table',
                                                      columns=[{"name": i, "id": i} for i in dfHols.columns],
                                                      data=dfHols.to_dict('records'),),
@@ -75,13 +80,23 @@ app.layout = html.Div(children=[html.H1("App here and there"),
 
 @app.callback(dash.dependencies.Output('hol_table', 'data'),
               [dash.dependencies.Input('year_choice', 'value'),
-               dash.dependencies.Input('month_choice', 'value')])
-def callback_fix_choices(years, months):
-    if years:
-        in_years = dfHols['year'].apply(lambda year: year in years)
-        df = dfHols[in_years]
+               dash.dependencies.Input('month_choice', 'value'),
+               dash.dependencies.Input('rule_choice', 'value')])
+def callback_fix_choices(years, months, selected_rules):
+
+    if selected_rules is not None:
+        print(selected_rules)
+        print(rules)
+        act_rules = [rule for rule in rules if rule.name in selected_rules]
+        hrs = RuleSet(act_rules)
+        date_items = RuleSet.values_by_ymd(hrs.dates_for_years(range(2018, 2038)))
+        df = pd.DataFrame(date_items)
     else:
         df = dfHols
+
+    if years:
+        in_years = df['year'].apply(lambda year: year in years)
+        df = df[in_years]
 
     if months:
         df = df[df['month'].apply(lambda month: month in months)]
