@@ -3,5 +3,3 @@
 source env/bin/activate
 #
 pylint holidayrules
-
-
